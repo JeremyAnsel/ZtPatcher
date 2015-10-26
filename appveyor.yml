@@ -12,7 +12,7 @@ assembly_info:
   assembly_informational_version: '{version}'
 
 build:
-  project: ZtPatcher\Zt.sln
+  project: Zt\Zt.sln
   verbosity: minimal
 
 after_build:
