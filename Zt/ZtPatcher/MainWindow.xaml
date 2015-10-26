@@ -1,0 +1,44 @@
+﻿<Window x:Class="ZtPatcher.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
+        xmlns:vc="clr-namespace:ZtPatcher"
+        Title="Zt Patcher"
+        Height="350"
+        Width="525">
+    <xctk:BusyIndicator x:Name="BusyIndicator">
+        <DockPanel>
+            <StackPanel DockPanel.Dock="Top">
+                <Button x:Name="OpenPatchButton"
+                        Content="Open patch..."
+                        Click="OpenPatchButton_Click" />
+                <TextBlock Text="{Binding PatchFile.FileName}" />
+                <Separator />
+                <TextBlock />
+                <Button x:Name="ApplyButton"
+                        Content="Apply patch to target file..."
+                        Click="ApplyButton_Click" />
+                <Separator />
+                <TextBlock />
+            </StackPanel>
+            <TabControl>
+                <TabItem Header="Patch comment">
+                    <TextBox IsReadOnly="True"
+                             Text="{Binding PatchFile.Comment}"
+                             TextWrapping="Wrap"
+                             AcceptsReturn="True"
+                             VerticalScrollBarVisibility="Visible" />
+                </TabItem>
+                <TabItem Header="Patch content">
+                    <ListBox ItemsSource="{Binding PatchFile.Patches}">
+                        <ListBox.ItemTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding Converter={vc:PatchItemConverter}}" />
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
+                </TabItem>
+            </TabControl>
+        </DockPanel>
+    </xctk:BusyIndicator>
+</Window>
