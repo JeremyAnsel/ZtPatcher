@@ -20,5 +20,5 @@ after_build:
 
 artifacts:
 - path: Zt\dist
-  name: ZtCreatorPatcher
+  name: 'ZtCreatorPatcher-{version}'
   type: zip
