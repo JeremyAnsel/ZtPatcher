@@ -324,14 +324,14 @@ namespace Zt
                 throw new ArgumentNullException("patch");
             }
 
-            for (int i = 0; i < patch.Length; i += 255)
+            for (int i = 0; i < patch.Length; i += 127)
             {
-                if (this.patches.Count >= ushort.MaxValue)
+                if (this.patches.Count >= short.MaxValue)
                 {
                     throw new InvalidDataException();
                 }
 
-                int length = Math.Min(patch.Length - i, 255);
+                int length = Math.Min(patch.Length - i, 127);
 
                 byte[] bytes = new byte[length];
                 Array.Copy(patch, i, bytes, 0, length);
@@ -352,7 +352,7 @@ namespace Zt
                 var p0 = this.patches.ElementAt(i - 1);
                 var p1 = this.patches.ElementAt(i);
 
-                if (!(count == 0 && p0.Value.Length == 255) && (p0.Key + p0.Value.Length == p1.Key))
+                if (!(count == 0 && p0.Value.Length == 127) && (p0.Key + p0.Value.Length == p1.Key))
                 {
                     count++;
                     continue;
