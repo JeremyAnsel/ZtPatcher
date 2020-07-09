@@ -10,6 +10,9 @@ dotnet_csproj:
   file: '**\*.csproj'
   version: '{version}'
 
+before_build:
+- nuget restore Zt\Zt.sln
+
 build:
   project: Zt\Zt.sln
   verbosity: minimal
