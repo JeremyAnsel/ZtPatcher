@@ -4,21 +4,23 @@ setlocal
 cd "%~dp0"
 
 For %%a in (
-"Zt\bin\Release\*.dll"
+"Zt\bin\Release\net40\*.dll"
 ) do (
 xcopy /s /d "%%~a" dist\
 )
 
 For %%a in (
-"ZtCreator\bin\Release\*.dll"
-"ZtCreator\bin\Release\*.exe"
+"ZtCreator\bin\Release\net40\*.dll"
+"ZtCreator\bin\Release\net40\*.exe"
+"ZtCreator\bin\Release\net40\*.config"
 ) do (
 xcopy /s /d "%%~a" dist\
 )
 
 For %%a in (
-"ZtPatcher\bin\Release\*.dll"
-"ZtPatcher\bin\Release\*.exe"
+"ZtPatcher\bin\Release\net40\*.dll"
+"ZtPatcher\bin\Release\net40\*.exe"
+"ZtPatcher\bin\Release\net40\*.config"
 ) do (
 xcopy /s /d "%%~a" dist\
 )
