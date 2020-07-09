@@ -1,5 +1,6 @@
 ﻿using Microsoft.Win32;
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using System.Windows;
 using Zt;
@@ -30,6 +31,7 @@ namespace ZtCreator
             this.DataContext = this;
         }
 
+        [SuppressMessage("CodeQuality", "IDE0051:Supprimer les membres privés non utilisés", Justification = "Reviewed.")]
         private void RunBusyAction(Action action)
         {
             this.RunBusyAction(dispatcher => action());
@@ -64,8 +66,10 @@ namespace ZtCreator
 
         private string GetOpenFileName()
         {
-            var dialog = new OpenFileDialog();
-            dialog.CheckFileExists = true;
+            var dialog = new OpenFileDialog
+            {
+                CheckFileExists = true
+            };
 
             if (dialog.ShowDialog(this) == true)
             {
@@ -79,9 +83,11 @@ namespace ZtCreator
 
         private string GetSaveFileName()
         {
-            var dialog = new SaveFileDialog();
-            dialog.AddExtension = true;
-            dialog.DefaultExt = "202";
+            var dialog = new SaveFileDialog
+            {
+                AddExtension = true,
+                DefaultExt = "202"
+            };
 
             if (dialog.ShowDialog(this) == true)
             {

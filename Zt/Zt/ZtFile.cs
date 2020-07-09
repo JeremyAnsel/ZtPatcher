@@ -10,17 +10,9 @@ namespace Zt
     {
         private const string UnknownTargetName = "UNKNOWNF.ILE";
 
-        private string targetName;
-
-        private SortedList<int, byte[]> patches;
+        private string targetName = ZtFile.UnknownTargetName;
 
         private string comment;
-
-        public ZtFile()
-        {
-            this.patches = new SortedList<int, byte[]>();
-            this.targetName = ZtFile.UnknownTargetName;
-        }
 
         public string FileName { get; private set; }
 
@@ -90,26 +82,20 @@ namespace Zt
         {
             get
             {
-                if (this.patches.Count == 0)
+                if (this.Patches.Count == 0)
                 {
                     return 0;
                 }
 
-                return this.patches.Max(t => t.Key + t.Value.Length);
+                return this.Patches.Max(t => t.Key + t.Value.Length);
             }
         }
 
-        public SortedList<int, byte[]> Patches
-        {
-            get
-            {
-                return this.patches;
-            }
-        }
+        public SortedList<int, byte[]> Patches { get; } = new SortedList<int, byte[]>();
 
         public int PatchesCount
         {
-            get { return this.patches.Count; }
+            get { return this.Patches.Count; }
         }
 
         public string Comment
@@ -144,12 +130,12 @@ namespace Zt
         {
             if (unmodifiedBytes == null)
             {
-                throw new ArgumentNullException("unmodifiedBytes");
+                throw new ArgumentNullException(nameof(unmodifiedBytes));
             }
 
             if (modifiedBytes == null)
             {
-                throw new ArgumentNullException("modifiedBytes");
+                throw new ArgumentNullException(nameof(modifiedBytes));
             }
 
             if (unmodifiedBytes.Length != modifiedBytes.Length)
@@ -184,9 +170,10 @@ namespace Zt
 
         public static ZtFile FromFile(string fileName)
         {
-            var zt = new ZtFile();
-
-            zt.FileName = fileName;
+            var zt = new ZtFile
+            {
+                FileName = fileName
+            };
 
             FileStream filestream = null;
 
@@ -208,7 +195,7 @@ namespace Zt
                         byte length = file.ReadByte();
                         byte[] bytes = file.ReadBytes(length);
 
-                        zt.patches.Add(offset, bytes);
+                        zt.Patches.Add(offset, bytes);
                     }
 
                     if (file.BaseStream.Position != file.BaseStream.Length)
@@ -235,6 +222,7 @@ namespace Zt
         public void Save(string fileName)
         {
             this.Compact();
+            this.CompactAdd();
 
             FileStream filestream = null;
 
@@ -247,9 +235,9 @@ namespace Zt
                     filestream = null;
 
                     file.Write(Encoding.ASCII.GetBytes(this.TargetName.PadRight(13, '\0')));
-                    file.Write((ushort)this.patches.Count);
+                    file.Write((ushort)this.Patches.Count);
 
-                    foreach (var patch in this.patches)
+                    foreach (var patch in this.Patches)
                     {
                         file.Write(patch.Key);
                         file.Write((byte)patch.Value.Length);
@@ -286,12 +274,12 @@ namespace Zt
         {
             if (bytes == null)
             {
-                throw new ArgumentNullException("bytes");
+                throw new ArgumentNullException(nameof(bytes));
             }
 
             if (bytes.Length < this.TargetMinimumLength)
             {
-                throw new ArgumentOutOfRangeException("bytes");
+                throw new ArgumentOutOfRangeException(nameof(bytes));
             }
 
             if (bytes.Length == 0)
@@ -299,7 +287,7 @@ namespace Zt
                 return;
             }
 
-            foreach (var patch in this.patches)
+            foreach (var patch in this.Patches)
             {
                 for (int i = 0; i < patch.Value.Length; i++)
                 {
@@ -312,17 +300,17 @@ namespace Zt
         {
             if (offset < 0)
             {
-                throw new ArgumentOutOfRangeException("offset");
+                throw new ArgumentOutOfRangeException(nameof(offset));
             }
 
             if (patch == null)
             {
-                throw new ArgumentNullException("patch");
+                throw new ArgumentNullException(nameof(patch));
             }
 
             for (int i = 0; i < patch.Length; i += 127)
             {
-                if (this.patches.Count >= short.MaxValue)
+                if (this.Patches.Count >= short.MaxValue)
                 {
                     throw new InvalidDataException();
                 }
@@ -332,7 +320,28 @@ namespace Zt
                 byte[] bytes = new byte[length];
                 Array.Copy(patch, i, bytes, 0, length);
 
-                this.patches[offset + i] = bytes;
+                this.Patches[offset + i] = bytes;
+            }
+        }
+
+        private void CompactAdd()
+        {
+            var items = new List<Tuple<int, byte[]>>();
+
+            for (int i = this.Patches.Count - 1; i >= 0; i--)
+            {
+                var patch = this.Patches.ElementAt(i);
+
+                if (patch.Value.Length > 127)
+                {
+                    items.Add(Tuple.Create(patch.Key, patch.Value));
+                    this.Patches.RemoveAt(i);
+                }
+            }
+
+            foreach (var item in items)
+            {
+                this.Add(item.Item1, item.Item2);
             }
         }
 
@@ -343,10 +352,10 @@ namespace Zt
             int start = 0;
             int count = 0;
 
-            for (int i = 1; i < this.patches.Count; i++)
+            for (int i = 1; i < this.Patches.Count; i++)
             {
-                var p0 = this.patches.ElementAt(i - 1);
-                var p1 = this.patches.ElementAt(i);
+                var p0 = this.Patches.ElementAt(i - 1);
+                var p1 = this.Patches.ElementAt(i);
 
                 if (!(count == 0 && p0.Value.Length == 127) && (p0.Key + p0.Value.Length == p1.Key))
                 {
@@ -356,7 +365,7 @@ namespace Zt
 
                 if (count != 0)
                 {
-                    items.Add(new Tuple<int, int>(this.patches.ElementAt(start).Key, count));
+                    items.Add(new Tuple<int, int>(this.Patches.ElementAt(start).Key, count));
                 }
 
                 start = i;
@@ -365,16 +374,16 @@ namespace Zt
 
             if (count != 0)
             {
-                items.Add(new Tuple<int, int>(this.patches.ElementAt(start).Key, count));
+                items.Add(new Tuple<int, int>(this.Patches.ElementAt(start).Key, count));
             }
 
             foreach (var item in items)
             {
-                int index = this.patches.IndexOfKey(item.Item1);
+                int index = this.Patches.IndexOfKey(item.Item1);
 
-                int offset = this.patches.ElementAt(index).Key;
+                int offset = this.Patches.ElementAt(index).Key;
 
-                byte[] bytes = this.patches
+                byte[] bytes = this.Patches
                     .Skip(index)
                     .Take(item.Item2 + 1)
                     .SelectMany(t => t.Value)
@@ -382,7 +391,7 @@ namespace Zt
 
                 for (int i = index + item.Item2; i >= index; i--)
                 {
-                    this.patches.RemoveAt(i);
+                    this.Patches.RemoveAt(i);
                 }
 
                 this.Add(offset, bytes);

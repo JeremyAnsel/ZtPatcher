@@ -1,5 +1,6 @@
 ﻿using Microsoft.Win32;
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using System.Windows;
 using Zt;
@@ -26,6 +27,7 @@ namespace ZtPatcher
             this.DataContext = this;
         }
 
+        [SuppressMessage("CodeQuality", "IDE0051:Supprimer les membres privés non utilisés", Justification = "Reviewed.")]
         private void RunBusyAction(Action action)
         {
             this.RunBusyAction(dispatcher => action());
@@ -60,8 +62,10 @@ namespace ZtPatcher
 
         private string GetOpenFileName()
         {
-            var dialog = new OpenFileDialog();
-            dialog.CheckFileExists = true;
+            var dialog = new OpenFileDialog
+            {
+                CheckFileExists = true
+            };
 
             if (dialog.ShowDialog(this) == true)
             {
