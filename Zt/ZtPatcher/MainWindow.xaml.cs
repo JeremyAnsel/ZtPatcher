@@ -1,13 +1,13 @@
-﻿using System;
+﻿using Microsoft.Win32;
+using System;
 using System.Threading.Tasks;
 using System.Windows;
-using Microsoft.Win32;
 using Zt;
 
 namespace ZtPatcher
 {
     /// <summary>
-    /// Logique d'interaction pour MainWindow.xaml
+    /// Interaction logic for MainWindow.xaml
     /// </summary>
     public partial class MainWindow : Window
     {

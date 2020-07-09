@@ -1,13 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Text;
 
 namespace Zt
 {
-    [SuppressMessage("Microsoft.Naming", "CA1709:IdentifiersShouldBeCasedCorrectly", MessageId = "Zt", Justification = "Reviewed")]
     public class ZtFile
     {
         private const string UnknownTargetName = "UNKNOWNF.ILE";
@@ -142,7 +140,6 @@ namespace Zt
             return ZtFile.Create(unmodifiedBytes, modifiedBytes);
         }
 
-        [SuppressMessage("Microsoft.Naming", "CA1720:IdentifiersShouldNotContainTypeNames", MessageId = "bytes", Justification = "Reviewed")]
         public static ZtFile Create(byte[] unmodifiedBytes, byte[] modifiedBytes)
         {
             if (unmodifiedBytes == null)
@@ -285,7 +282,6 @@ namespace Zt
             File.WriteAllBytes(fileName, bytes);
         }
 
-        [SuppressMessage("Microsoft.Naming", "CA1720:IdentifiersShouldNotContainTypeNames", MessageId = "bytes", Justification = "Reviewed")]
         public void Apply(byte[] bytes)
         {
             if (bytes == null)
