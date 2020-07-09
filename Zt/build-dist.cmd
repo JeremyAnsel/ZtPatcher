@@ -24,3 +24,11 @@ For %%a in (
 ) do (
 xcopy /s /d "%%~a" dist\
 )
+
+For %%a in (
+"ZtBlank\bin\Release\net40\*.dll"
+"ZtBlank\bin\Release\net40\*.exe"
+"ZtBlank\bin\Release\net40\*.config"
+) do (
+xcopy /s /d "%%~a" dist\
+)
