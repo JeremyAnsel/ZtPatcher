@@ -43,6 +43,13 @@
                         </ListBox.ItemTemplate>
                     </ListBox>
                 </TabItem>
+                <TabItem Header="Patch xml">
+                    <TextBox IsReadOnly="True"
+                             Text="{Binding PatchFile.XmlPatch, Mode=OneWay}"
+                             TextWrapping="Wrap"
+                             AcceptsReturn="True"
+                             VerticalScrollBarVisibility="Visible" />
+                </TabItem>
             </TabControl>
         </DockPanel>
     </xctk:BusyIndicator>

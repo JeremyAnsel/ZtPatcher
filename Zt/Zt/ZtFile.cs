@@ -1,4 +1,5 @@
-﻿using System;
+﻿using JeremyAnsel.Xwa.ExePatcher;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -115,6 +116,37 @@ namespace Zt
                 {
                     this.comment = Encoding.UTF8.GetString(Encoding.UTF8.GetBytes(value));
                 }
+            }
+        }
+
+        public string XmlPatch
+        {
+            get
+            {
+                var patcher = new Patcher();
+                var patch = new Patch();
+                patcher.Patches.Add(patch);
+                patch.Name = this.Name;
+
+                foreach (var ztPatch in this.Patches)
+                {
+                    var patchItem = new PatchItem()
+                    {
+                        Offset = ztPatch.Key,
+                        NewValues = ztPatch.Value
+                    };
+
+                    patch.Items.Add(patchItem);
+                }
+
+                using var ms = new MemoryStream();
+                patcher.Write(ms);
+
+                ms.Seek(0, SeekOrigin.Begin);
+                using var stringReader = new StreamReader(ms);
+
+                string xmlString = stringReader.ReadToEnd();
+                return xmlString;
             }
         }
 
